@@ -1,4 +1,4 @@
-FROM gitpod/workspace-full:latest
+FROM public.ecr.aws/g7f0f4s4/gitpod/full:latest
 
 # Install Xvfb, JavaFX-helpers and Openbox window manager
 RUN sudo install-packages xvfb x11vnc xterm openjfx libopenjfx-java openbox
@@ -26,6 +26,7 @@ RUN chmod +x /usr/bin/start-vnc-session.sh
 RUN echo "export DISPLAY=:0" >> ~/.bashrc
 RUN echo "[ ! -e /tmp/.X0-lock ] && (/usr/bin/start-vnc-session.sh &> /tmp/display-\${DISPLAY}.log)" >> ~/.bashrc
 
+RUN chown -R gitpod:gitpod .
 ### checks ###
 # no root-owned files in the home directory
 RUN notOwnedFile=$(find . -not "(" -user gitpod -and -group gitpod ")" -print -quit) \
