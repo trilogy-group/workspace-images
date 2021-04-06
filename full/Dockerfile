@@ -1,5 +1,5 @@
 # Dazzle do not supports ARG TRIGGER_REBUILD=2
-FROM gitpod/workspace-base:latest
+FROM 082830052325.dkr.ecr.us-east-1.amazonaws.com/gitpod/base:latest
 
 RUN echo "ws full starts"
 
@@ -63,14 +63,14 @@ LABEL dazzle/layer=tool-brew
 LABEL dazzle/test=tests/tool-brew.yaml
 USER gitpod
 # Dazzle does not rebuild a layer until one of its lines are changed. Increase this counter to rebuild this layer.
-ENV TRIGGER_BREW_REBUILD=1
-RUN mkdir ~/.cache && /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-ENV PATH="$PATH:/home/linuxbrew/.linuxbrew/bin:/home/linuxbrew/.linuxbrew/sbin/" \
-    MANPATH="$MANPATH:/home/linuxbrew/.linuxbrew/share/man" \
-    INFOPATH="$INFOPATH:/home/linuxbrew/.linuxbrew/share/info" \
-    HOMEBREW_NO_AUTO_UPDATE=1
-RUN sudo apt remove -y cmake \
-    && brew install cmake
+# ENV TRIGGER_BREW_REBUILD=1
+# RUN mkdir ~/.cache && /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+# ENV PATH="$PATH:/home/linuxbrew/.linuxbrew/bin:/home/linuxbrew/.linuxbrew/sbin/" \
+#     MANPATH="$MANPATH:/home/linuxbrew/.linuxbrew/share/man" \
+#     INFOPATH="$INFOPATH:/home/linuxbrew/.linuxbrew/share/info" \
+#     HOMEBREW_NO_AUTO_UPDATE=1
+# RUN sudo apt remove -y cmake \
+#     && brew install cmake
 
 ### Go ###
 LABEL dazzle/layer=lang-go
@@ -80,7 +80,7 @@ ENV GO_VERSION=1.16.2
 ENV GOPATH=$HOME/go-packages
 ENV GOROOT=$HOME/go
 ENV PATH=$GOROOT/bin:$GOPATH/bin:$PATH
-RUN curl -fsSL https://storage.googleapis.com/golang/go$GO_VERSION.linux-amd64.tar.gz | tar xzs && \
+RUN curl -fsSL https://storage.googleapis.com/golang/go$GO_VERSION.linux-arm64.tar.gz | tar xzs && \
 # install VS Code Go tools from https://github.com/Microsoft/vscode-go/blob/0faec7e5a8a69d71093f08e035d33beb3ded8626/src/goInstallTools.ts#L19-L45
     go get -u -v \
         github.com/mdempsky/gocode \
@@ -120,7 +120,7 @@ LABEL dazzle/test=tests/lang-java.yaml
 USER gitpod
 RUN curl -fsSL "https://get.sdkman.io" | bash \
  && bash -c ". /home/gitpod/.sdkman/bin/sdkman-init.sh \
-             && sdk install java 11.0.10.fx-zulu \
+             && sdk install java 11.0.10.hs-adpt\
              && sdk install gradle \
              && sdk install maven \
              && sdk flush archives \
@@ -182,7 +182,7 @@ RUN curl -fsSL https://rvm.io/mpapis.asc | gpg --import - \
         rvm requirements \
         && rvm install 2.6.6 \
         && rvm use 2.6.6 --default \
-        && rvm rubygems current \
+        && rvm rubygems 3.2.15 \
         && gem install bundler --no-document \
         && gem install solargraph --no-document" \
     && echo '[[ -s "$HOME/.rvm/scripts/rvm" ]] && source "$HOME/.rvm/scripts/rvm" # Load RVM into a shell session *as a function*' >> /home/gitpod/.bashrc.d/70-ruby
@@ -213,27 +213,39 @@ ENV TRIGGER_REBUILD=2
 # https://docs.docker.com/engine/install/ubuntu/
 RUN curl -o /var/lib/apt/dazzle-marks/docker.gpg -fsSL https://download.docker.com/linux/ubuntu/gpg \
     && apt-key add /var/lib/apt/dazzle-marks/docker.gpg \
-    && add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" \
+    && add-apt-repository "deb [arch=arm64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" \
     && install-packages docker-ce=5:19.03.15~3-0~ubuntu-focal docker-ce-cli=5:19.03.15~3-0~ubuntu-focal containerd.io
 
 RUN curl -o /usr/bin/slirp4netns -fsSL https://github.com/rootless-containers/slirp4netns/releases/download/v1.1.9/slirp4netns-$(uname -m) \
     && chmod +x /usr/bin/slirp4netns
 
-RUN curl -o /usr/local/bin/docker-compose -fsSL https://github.com/docker/compose/releases/download/1.28.5/docker-compose-Linux-x86_64 \
+# RUN curl -o /usr/local/bin/docker-compose -fsSL https://github.com/docker/compose/releases/download/1.28.5/docker-compose-Linux-x86_64 \
+    # && chmod +x /usr/local/bin/docker-compose
+RUN sudo curl -L "https://github.com/docker/compose/releases/download/1.28.5/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose \
     && chmod +x /usr/local/bin/docker-compose
 
 # https://github.com/wagoodman/dive
-RUN curl -o /tmp/dive.deb -fsSL https://github.com/wagoodman/dive/releases/download/v0.9.2/dive_0.9.2_linux_amd64.deb \
-    && apt install /tmp/dive.deb \
-    && rm /tmp/dive.deb
+# RUN curl -o /tmp/dive.deb -fsSL https://github.com/wagoodman/dive/releases/download/v0.9.2/dive_0.9.2_linux_arm64.deb \
+    # && apt install /tmp/dive.deb \
+    # && rm /tmp/dive.deb
+
+RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-aarch64.zip" -o "awscliv2.zip" && unzip awscliv2.zip && sudo ./aws/install
+ARG AWS_ACCESS_KEY_ID
+ARG AWS_SECRET_ACCESS_KEY
+RUN aws s3 cp s3://arm-devspaces/dive /usr/bin/dive \
+    && chmod +x /usr/bin/dive
 
 ### Prologue (built across all layers) ###
 LABEL dazzle/layer=dazzle-prologue
 LABEL dazzle/test=tests/prologue.yaml
 USER root
-RUN curl -o /usr/bin/dazzle-util -fsSL https://github.com/csweichel/dazzle/releases/download/v0.0.3/dazzle-util_0.0.3_Linux_x86_64 \
+RUN aws s3 cp s3://arm-devspaces/dazzle-util /usr/bin/dazzle-util \
     && chmod +x /usr/bin/dazzle-util
+
+# RUN curl -o /usr/bin/dazzle-util -fsSL https://github.com/csweichel/dazzle/releases/download/v0.0.3/dazzle-util_0.0.3_Linux_x86_64 \
+#     && chmod +x /usr/bin/dazzle-util
 # merge dpkg status files
+# TODO check if this is necessary
 RUN cp /var/lib/dpkg/status /tmp/dpkg-status \
     && for i in $(ls /var/lib/apt/dazzle-marks/*.status); do /usr/bin/dazzle-util debian dpkg-status-merge /tmp/dpkg-status $i > /tmp/dpkg-status; done \
     && cp -f /var/lib/dpkg/status /var/lib/dpkg/status-old \
