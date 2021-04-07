@@ -1,5 +1,5 @@
 # Dazzle do not supports ARG TRIGGER_REBUILD=2
-FROM 082830052325.dkr.ecr.us-east-1.amazonaws.com/gitpod/base:latest
+FROM  public.ecr.aws/g7f0f4s4/gitpod/base:latest
 
 RUN echo "ws full starts"
 
