@@ -53,7 +53,7 @@ RUN install-packages mysql-client
 RUN cd /usr/local && wget https://golang.org/dl/go1.16.3.linux-arm64.tar.gz && rm -rf /usr/local/go && tar -C /usr/local -xzf go1.16.3.linux-arm64.tar.gz \
     && echo "export PATH=\$PATH:/usr/local/" >> /home/gitpod/.bashrc 
 
-# RUN cd /usr/local && curl -fsSL https://install.goreleaser.com/github.com/golangci/golangci-lint.sh | sh -s v1.16.0
+RUN cd /usr/local && curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s v1.34.0
 
 # leeway
 ENV LEEWAY_NESTED_WORKSPACE=true
@@ -217,7 +217,7 @@ RUN mkdir -p ~/.terraform \
 
 # Install GraphViz to help debug terraform scripts
 RUN sudo install-packages graphviz
-
+RUN sudo chmod -R 777 /home/gitpod/
 ENV PATH=$PATH:$HOME/.aws-iam:$HOME/.terraform
 RUN echo ${GOPATH}
 # RUN echo -e "#!/bin/bash\n node -v \$@" > entrypoint.sh
