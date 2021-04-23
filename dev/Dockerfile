@@ -136,10 +136,9 @@ RUN bash -c "echo . \<\(leeway bash-completion\) >> ~/.bashrc"
 
 # TODO
 # Install pulumi
-# RUN curl -fsSL https://get.pulumi.com | sh \
-#     && mkdir -p /home/gitpod/.pulumi/bin \
-#     && mv ~/.pulumi/* /home/gitpod/.pulumi/bin \
-#     && echo "export PATH=\$PATH:/home/gitpod/.pulumi/bin" >> /home/gitpod/.bashrc 
+RUN curl -fsSL https://get.pulumi.com | sh \
+    && mkdir -p /home/gitpod/.pulumi/bin \
+    && echo "export PATH=\$PATH:/home/gitpod/.pulumi/bin" >> /home/gitpod/.bashrc 
 
 # RUN curl -fsSL https://get.pulumi.com/releases/sdk/pulumi-v1.9.1-linux-x64.tar.gz | tar xvzC . \
 #     && mkdir -p /home/gitpod/.pulumi/bin \
@@ -151,12 +150,23 @@ RUN bash -c "echo . \<\(leeway bash-completion\) >> ~/.bashrc"
 # not installed via repository as then 'docker-credential-gcr' is not available
 ARG GCS_DIR=/opt/google-cloud-sdk
 ENV PATH=$GCS_DIR/bin:$PATH
-RUN sudo apt-get update \
-    && sudo apt-get install apt-transport-https ca-certificates gnupg -y \
-    && echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] https://packages.cloud.google.com/apt cloud-sdk main" | sudo tee -a /etc/apt/sources.list.d/google-cloud-sdk.list \
-    && curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key --keyring /usr/share/keyrings/cloud.google.gpg add - \
-    && sudo apt-get update && sudo apt-get install google-cloud-sdk -y
-    # && gcloud init
+# Downloading gcloud package
+RUN curl https://dl.google.com/dl/cloudsdk/release/google-cloud-sdk.tar.gz > /tmp/google-cloud-sdk.tar.gz
+
+# Installing the package
+RUN sudo mkdir -p /usr/local/gcloud \
+  && sudo tar -C /usr/local/gcloud -xvf /tmp/google-cloud-sdk.tar.gz \
+  && sudo /usr/local/gcloud/google-cloud-sdk/install.sh
+
+# Adding the package path to local
+ENV PATH $PATH:/usr/local/gcloud/google-cloud-sdk/bin
+
+# RUN sudo apt-get update \
+#     && sudo apt-get install apt-transport-https ca-certificates gnupg -y \
+#     && echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] https://packages.cloud.google.com/apt cloud-sdk main" | sudo tee -a /etc/apt/sources.list.d/google-cloud-sdk.list \
+#     && curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key --keyring /usr/share/keyrings/cloud.google.gpg add - \
+#     && sudo apt-get update && sudo apt-get install google-cloud-sdk -y
+#     # && gcloud init
 RUN echo ${GOPATH}
 RUN echo ${USER}
 # TODO fix this
@@ -193,7 +203,7 @@ RUN echo ". /workspace/gitpod/scripts/setup-google-adc.sh" >> ~/.bashrc
 
 ENV DB_HOST=localhost
 
-ENV LEEWAY_WORKSPACE_ROOT=/workspace/gitpod
+ENV LEEWAY_WORKSPACE_ROOT=~/code/
 ENV LEEWAY_REMOTE_CACHE_BUCKET=gitpod-core-leeway-cache-branch
 
 ### AWS Cli ###
@@ -220,6 +230,7 @@ RUN sudo install-packages graphviz
 RUN sudo chmod -R 777 /home/gitpod/
 ENV PATH=$PATH:$HOME/.aws-iam:$HOME/.terraform
 RUN echo ${GOPATH}
+USER root
 # RUN echo -e "#!/bin/bash\n node -v \$@" > entrypoint.sh
 # RUN chmod +x entrypoint.sh
 # RUN node -v
