@@ -106,14 +106,15 @@ RUN curl -fsSL https://storage.googleapis.com/golang/go$GO_VERSION.linux-amd64.t
         github.com/sourcegraph/go-langserver \
         github.com/go-delve/delve/cmd/dlv \
         github.com/davidrjenni/reftools/cmd/fillstruct \
-        github.com/godoctor/godoctor && \
+#        github.com/godoctor/godoctor \
+        && \
     GO111MODULE=on go get -u -v \
         golang.org/x/tools/gopls@v0.6.11 && \
     sudo rm -rf $GOPATH/src $GOPATH/pkg /home/gitpod/.cache/go /home/gitpod/.cache/go-build
 # user Go packages
 ENV GOPATH=/workspace/go \
     PATH=/workspace/go/bin:$PATH
-    
+
 ### Java ###
 ## Place '.gradle' and 'm2-repository' in /workspace because (1) that's a fast volume, (2) it survives workspace-restarts and (3) it can be warmed-up by pre-builds.
 LABEL dazzle/layer=lang-java
