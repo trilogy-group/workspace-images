@@ -64,7 +64,7 @@ LABEL dazzle/layer=tool-brew
 LABEL dazzle/test=tests/tool-brew.yaml
 USER gitpod
 # Dazzle does not rebuild a layer until one of its lines are changed. Increase this counter to rebuild this layer.
-#ENV TRIGGER_BREW_REBUILD=1
+ENV TRIGGER_BREW_REBUILD=1
 #RUN mkdir ~/.cache && /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 #ENV PATH="$PATH:/home/linuxbrew/.linuxbrew/bin:/home/linuxbrew/.linuxbrew/sbin/" \
 #    MANPATH="$MANPATH:/home/linuxbrew/.linuxbrew/share/man" \
@@ -105,9 +105,10 @@ RUN curl -fsSL https://storage.googleapis.com/golang/go$GO_VERSION.linux-amd64.t
         github.com/mgechev/revive \
         github.com/sourcegraph/go-langserver \
         github.com/go-delve/delve/cmd/dlv \
-        github.com/davidrjenni/reftools/cmd/fillstruct && \
+        github.com/davidrjenni/reftools/cmd/fillstruct \
+        github.com/godoctor/godoctor && \
     GO111MODULE=on go get -u -v \
-        golang.org/x/tools/gopls@v0.6.11 && \
+        golang.org/x/tools/gopls@v0.6.10 && \
     sudo rm -rf $GOPATH/src $GOPATH/pkg /home/gitpod/.cache/go /home/gitpod/.cache/go-build
 # user Go packages
 ENV GOPATH=/workspace/go \
