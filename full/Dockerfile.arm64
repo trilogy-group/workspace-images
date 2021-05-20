@@ -234,7 +234,7 @@ RUN unzip dive-arm64.zip -d /usr/bin && chmod +x /usr/bin/dive
 LABEL dazzle/layer=dazzle-prologue
 LABEL dazzle/test=tests/prologue.yaml
 USER root
-RUN curl -o /usr/bin/dazzle-util -fsSL https://github.com/csweichel/dazzle/releases/download/v0.0.3/dazzle-util_0.0.3_Linux_x86_64 \
+RUN curl -o /usr/bin/dazzle-util -fsSL https://github.com/csweichel/dazzle/releases/download/v0.1.0/dazzle-util_0.1.0_Linux_arm64 \
     && chmod +x /usr/bin/dazzle-util
 # merge dpkg status files
 RUN cp /var/lib/dpkg/status /tmp/dpkg-status \
