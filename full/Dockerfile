@@ -76,7 +76,7 @@ USER gitpod
 LABEL dazzle/layer=lang-go
 LABEL dazzle/test=tests/lang-go.yaml
 USER gitpod
-ENV GO_VERSION=1.16.2
+ENV GO_VERSION=1.16.4
 ENV GOPATH=$HOME/go-packages
 ENV GOROOT=$HOME/go
 ENV PATH=$GOROOT/bin:$GOPATH/bin:$PATH
@@ -104,10 +104,8 @@ RUN curl -fsSL https://storage.googleapis.com/golang/go$GO_VERSION.linux-arm64.t
         github.com/mgechev/revive \
         github.com/sourcegraph/go-langserver \
         github.com/go-delve/delve/cmd/dlv \
-        github.com/davidrjenni/reftools/cmd/fillstruct \
-        github.com/godoctor/godoctor && \
-    GO111MODULE=on go get -u -v \
-        golang.org/x/tools/gopls@v0.6.9 && \
+        github.com/davidrjenni/reftools/cmd/fillstruct && \
+    GO111MODULE=on go get golang.org/x/tools/gopls && \
     sudo rm -rf $GOPATH/src $GOPATH/pkg /home/gitpod/.cache/go /home/gitpod/.cache/go-build
 # user Go packages
 ENV GOPATH=/workspace/go \
@@ -136,7 +134,7 @@ ENV GRADLE_USER_HOME=/workspace/.gradle/
 LABEL dazzle/layer=lang-node
 LABEL dazzle/test=tests/lang-node.yaml
 USER gitpod
-ENV NODE_VERSION=14.16.0
+ENV NODE_VERSION=14.17.0
 RUN curl -fsSL https://raw.githubusercontent.com/nvm-sh/nvm/v0.37.2/install.sh | PROFILE=/dev/null bash \
     && bash -c ". .nvm/nvm.sh \
         && nvm install $NODE_VERSION \
@@ -151,7 +149,7 @@ ENV PATH=$PATH:/home/gitpod/.nvm/versions/node/v${NODE_VERSION}/bin
 LABEL dazzle/layer=lang-python
 LABEL dazzle/test=tests/lang-python.yaml
 USER gitpod
-RUN sudo install-packages python3-pip
+RUN sudo install-packages python3-pip libffi-dev openssl gcc libc-dev cargo
 
 ENV PATH=$HOME/.pyenv/bin:$HOME/.pyenv/shims:$PATH
 RUN curl -fsSL https://github.com/pyenv/pyenv-installer/raw/master/bin/pyenv-installer | bash \
@@ -159,8 +157,8 @@ RUN curl -fsSL https://github.com/pyenv/pyenv-installer/raw/master/bin/pyenv-ins
         echo 'eval "$(pyenv init -)"'; \
         echo 'eval "$(pyenv virtualenv-init -)"'; } >> /home/gitpod/.bashrc.d/60-python \
     && pyenv update \
-    && pyenv install 3.8.8 \
-    && pyenv global 3.8.8 \
+    && pyenv install 3.8.10 \
+    && pyenv global 3.8.10 \
     && python3 -m pip install --no-cache-dir --upgrade pip \
     && python3 -m pip install --no-cache-dir --upgrade \
         setuptools wheel virtualenv pipenv pylint rope flake8 \
@@ -180,9 +178,9 @@ RUN curl -fsSL https://rvm.io/mpapis.asc | gpg --import - \
     && curl -fsSL https://get.rvm.io | bash -s stable \
     && bash -lc " \
         rvm requirements \
-        && rvm install 2.6.6 \
-        && rvm use 2.6.6 --default \
-        && rvm rubygems 3.2.15 \
+        && rvm install 2.7.3 \
+        && rvm use 2.7.3 --default \
+        && rvm rubygems current \
         && gem install bundler --no-document \
         && gem install solargraph --no-document" \
     && echo '[[ -s "$HOME/.rvm/scripts/rvm" ]] && source "$HOME/.rvm/scripts/rvm" # Load RVM into a shell session *as a function*' >> /home/gitpod/.bashrc.d/70-ruby
@@ -193,11 +191,12 @@ LABEL dazzle/layer=lang-rust
 LABEL dazzle/test=tests/lang-rust.yaml
 USER gitpod
 RUN cp /home/gitpod/.profile /home/gitpod/.profile_orig && \
-    curl -fsSL https://sh.rustup.rs | sh -s -- -y --profile minimal --default-toolchain 1.51.0 \
+    curl -fsSL https://sh.rustup.rs | sh -s -- -y --profile minimal --default-toolchain 1.52.1 \
     && .cargo/bin/rustup component add \
         rls \
         rust-analysis \
         rust-src \
+        rustfmt \
     && .cargo/bin/rustup completions bash | sudo tee /etc/bash_completion.d/rustup.bash-completion > /dev/null \
     && .cargo/bin/rustup completions bash cargo | sudo tee /etc/bash_completion.d/rustup.cargo-bash-completion > /dev/null \
     && grep -v -F -x -f /home/gitpod/.profile_orig /home/gitpod/.profile > /home/gitpod/.bashrc.d/80-rust
@@ -219,31 +218,28 @@ RUN curl -o /var/lib/apt/dazzle-marks/docker.gpg -fsSL https://download.docker.c
 RUN curl -o /usr/bin/slirp4netns -fsSL https://github.com/rootless-containers/slirp4netns/releases/download/v1.1.9/slirp4netns-$(uname -m) \
     && chmod +x /usr/bin/slirp4netns
 
-# RUN curl -o /usr/local/bin/docker-compose -fsSL https://github.com/docker/compose/releases/download/1.28.5/docker-compose-Linux-x86_64 \
-    # && chmod +x /usr/local/bin/docker-compose
-RUN sudo curl -L "https://github.com/docker/compose/releases/download/1.28.5/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose \
-    && chmod +x /usr/local/bin/docker-compose
+# Docker compose doesn't provide binaries for ARM
+# RUN sudo curl -L "https://github.com/docker/compose/releases/download/1.28.5/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose \
+#     && chmod +x /usr/local/bin/docker-compose
+# RUN pip3 install docker-compose
 
 # https://github.com/wagoodman/dive
-# RUN curl -o /tmp/dive.deb -fsSL https://github.com/wagoodman/dive/releases/download/v0.9.2/dive_0.9.2_linux_arm64.deb \
-    # && apt install /tmp/dive.deb \
-    # && rm /tmp/dive.deb
-
-RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-aarch64.zip" -o "awscliv2.zip" && unzip awscliv2.zip && sudo ./aws/install
-ARG AWS_ACCESS_KEY_ID
-ARG AWS_SECRET_ACCESS_KEY
-RUN aws s3 cp s3://arm-devspaces/dive /usr/bin/dive \
+RUN curl -fsSL "https://arm-devspaces.s3.amazonaws.com/dive" -o  /usr/bin/dive \
     && chmod +x /usr/bin/dive
+
+# AWS CLI
+RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-aarch64.zip" -o "awscliv2.zip" && unzip awscliv2.zip && sudo ./aws/install
+
+# EKSCTL
+RUN curl --silent --location "https://github.com/weaveworks/eksctl/releases/latest/download/eksctl_$(uname -s)_arm64.tar.gz" | tar xz -C /tmp && \
+  sudo mv /tmp/eksctl /usr/local/bin
 
 ### Prologue (built across all layers) ###
 LABEL dazzle/layer=dazzle-prologue
 LABEL dazzle/test=tests/prologue.yaml
 USER root
-RUN aws s3 cp s3://arm-devspaces/dazzle-util /usr/bin/dazzle-util \
+RUN curl -fsSL https://arm-devspaces.s3.amazonaws.com/dazzle-util -o /usr/bin/dazzle-util \
     && chmod +x /usr/bin/dazzle-util
-
-# RUN curl -o /usr/bin/dazzle-util -fsSL https://github.com/csweichel/dazzle/releases/download/v0.0.3/dazzle-util_0.0.3_Linux_x86_64 \
-#     && chmod +x /usr/bin/dazzle-util
 # merge dpkg status files
 # TODO check if this is necessary
 RUN cp /var/lib/dpkg/status /tmp/dpkg-status \
