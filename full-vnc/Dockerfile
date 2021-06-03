@@ -1,4 +1,4 @@
-FROM public.ecr.aws/g7f0f4s4/gitpod/full:latest
+FROM public.ecr.aws/g7f0f4s4/workspace-full:latest
 
 # Install Xvfb, JavaFX-helpers and Openbox window manager
 RUN sudo install-packages xvfb x11vnc xterm openjfx libopenjfx-java openbox
