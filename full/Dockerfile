@@ -63,7 +63,7 @@ LABEL dazzle/layer=tool-brew
 LABEL dazzle/test=tests/tool-brew.yaml
 USER gitpod
 # Dazzle does not rebuild a layer until one of its lines are changed. Increase this counter to rebuild this layer.
-# ENV TRIGGER_BREW_REBUILD=1
+# ENV TRIGGER_BREW_REBUILD=2
 # RUN mkdir ~/.cache && /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 # ENV PATH="$PATH:/home/linuxbrew/.linuxbrew/bin:/home/linuxbrew/.linuxbrew/sbin/" \
 #     MANPATH="$MANPATH:/home/linuxbrew/.linuxbrew/share/man" \
@@ -105,7 +105,8 @@ RUN curl -fsSL https://storage.googleapis.com/golang/go$GO_VERSION.linux-arm64.t
         github.com/sourcegraph/go-langserver \
         github.com/go-delve/delve/cmd/dlv \
         github.com/davidrjenni/reftools/cmd/fillstruct && \
-    GO111MODULE=on go get golang.org/x/tools/gopls && \
+    GO111MODULE=on go get -v \
+        golang.org/x/tools/gopls@v0.6.11 && \
     sudo rm -rf $GOPATH/src $GOPATH/pkg /home/gitpod/.cache/go /home/gitpod/.cache/go-build
 # user Go packages
 ENV GOPATH=/workspace/go \
@@ -118,7 +119,7 @@ LABEL dazzle/test=tests/lang-java.yaml
 USER gitpod
 RUN curl -fsSL "https://get.sdkman.io" | bash \
  && bash -c ". /home/gitpod/.sdkman/bin/sdkman-init.sh \
-             && sdk install java 11.0.10.hs-adpt\
+             && sdk install java 11.0.11.hs-adpt\
              && sdk install gradle \
              && sdk install maven \
              && sdk flush archives \
