@@ -64,7 +64,7 @@ LABEL dazzle/layer=tool-brew
 LABEL dazzle/test=tests/tool-brew.yaml
 USER gitpod
 # Dazzle does not rebuild a layer until one of its lines are changed. Increase this counter to rebuild this layer.
-ENV TRIGGER_BREW_REBUILD=1
+ENV TRIGGER_BREW_REBUILD=2
 RUN mkdir ~/.cache && /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 ENV PATH="$PATH:/home/linuxbrew/.linuxbrew/bin:/home/linuxbrew/.linuxbrew/sbin/" \
     MANPATH="$MANPATH:/home/linuxbrew/.linuxbrew/share/man" \
@@ -77,13 +77,13 @@ RUN sudo apt remove -y cmake \
 LABEL dazzle/layer=lang-go
 LABEL dazzle/test=tests/lang-go.yaml
 USER gitpod
-ENV GO_VERSION=1.16.2
+ENV GO_VERSION=1.16.4
 ENV GOPATH=$HOME/go-packages
 ENV GOROOT=$HOME/go
 ENV PATH=$GOROOT/bin:$GOPATH/bin:$PATH
 RUN curl -fsSL https://storage.googleapis.com/golang/go$GO_VERSION.linux-amd64.tar.gz | tar xzs && \
 # install VS Code Go tools from https://github.com/Microsoft/vscode-go/blob/0faec7e5a8a69d71093f08e035d33beb3ded8626/src/goInstallTools.ts#L19-L45
-    go get -u -v \
+    go get -v \
         github.com/mdempsky/gocode \
         github.com/uudashr/gopkgs/cmd/gopkgs@v2 \
         github.com/ramya-rao-a/go-outline \
