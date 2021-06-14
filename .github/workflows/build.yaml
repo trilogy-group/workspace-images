@@ -1,0 +1,30 @@
+name: Build
+
+on:
+  pull_request:
+    branches:
+      - master
+
+env:
+  IMAGE_REPO: public.ecr.aws/b1o4t7o5
+  VERSION: github
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v1
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+      - uses: actions/checkout@v2
+      - name: Login to Amazon ECR
+        run: aws ecr-public get-login-password | docker login --username AWS --password-stdin public.ecr.aws
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: ${{ secrets.AWS_REGION }}
+      - name: Build Docker images workspace-base
+        working-directory: ./base
+        run: docker buildx build -t $IMAGE_REPO/workspace-base:$VERSION --platform linux/amd64,linux/arm64 --push .
