@@ -30,4 +30,4 @@ jobs:
         run: docker buildx build -t $IMAGE_REPO/workspace-base:$VERSION --platform linux/amd64,linux/arm64 --push .
       - name: Build Docker image workspace-full (amd64)
         working-directory: ./full
-        run: docker build -t $IMAGE_REPO/workspace-full:$VERSION-amd64 --build-arg BASE_IMAGE=$IMAGE_REPO/workspace-base:$VERSION --push .
+        run: docker build -t $IMAGE_REPO/workspace-full:$VERSION-amd64 --build-arg BASE_IMAGE=$IMAGE_REPO/workspace-base:$VERSION .
