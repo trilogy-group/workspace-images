@@ -32,7 +32,7 @@ jobs:
 
   build-full-amd64:
     name: Build Docker image workspace-full (amd64)
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, Linux, X64]
     steps:
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v1
@@ -51,7 +51,7 @@ jobs:
 
   build:
     name: Build Docker image workspace-full (arm64)
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, Linux, ARM64]
     steps:
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v1
@@ -66,4 +66,4 @@ jobs:
           AWS_DEFAULT_REGION: ${{ secrets.AWS_REGION }}
       - name: Build Docker image workspace-full (arm64)
         working-directory: ./full
-        run: docker buildx build -t $IMAGE_REPO/workspace-full:$VERSION-arm64 --build-arg BASE_IMAGE=$IMAGE_REPO/workspace-base:$VERSION --platform linux/arm64 -f Dockerfile.arm64 .
+        run: docker build -t $IMAGE_REPO/workspace-full:$VERSION-arm64 --build-arg BASE_IMAGE=$IMAGE_REPO/workspace-base:$VERSION -f Dockerfile.arm64 .
