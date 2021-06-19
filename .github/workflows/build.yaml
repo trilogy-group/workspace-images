@@ -26,6 +26,7 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_DEFAULT_REGION: ${{ secrets.AWS_REGION }}
       - name: Build Docker images workspace-base
+        if: ${{ false }}
         working-directory: ./base
         run: docker buildx build -t $IMAGE_REPO/workspace-base:$VERSION --platform linux/amd64,linux/arm64 --push .
       - name: Build Docker image workspace-full (amd64)
