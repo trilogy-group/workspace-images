@@ -105,8 +105,9 @@ RUN curl -fsSL https://storage.googleapis.com/golang/go$GO_VERSION.linux-amd64.t
         github.com/mgechev/revive \
         github.com/sourcegraph/go-langserver \
         github.com/go-delve/delve/cmd/dlv \
-        github.com/davidrjenni/reftools/cmd/fillstruct && \
-    GO111MODULE=on go get -u -v \
+        github.com/davidrjenni/reftools/cmd/fillstruct \
+        github.com/godoctor/godoctor && \
+    GO111MODULE=on go get -v \
         golang.org/x/tools/gopls@v0.7.0 && \
     sudo rm -rf $GOPATH/src $GOPATH/pkg /home/gitpod/.cache/go /home/gitpod/.cache/go-build
 # user Go packages
