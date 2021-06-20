@@ -34,10 +34,6 @@ jobs:
     name: Build Docker image workspace-full (amd64)
     runs-on: [self-hosted, Linux, X64]
     steps:
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v1
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v1
       - uses: actions/checkout@v2
       - name: Login to Amazon ECR
         run: aws ecr-public get-login-password | docker login --username AWS --password-stdin public.ecr.aws
@@ -53,10 +49,6 @@ jobs:
     name: Build Docker image workspace-full (arm64)
     runs-on: [self-hosted, Linux, ARM64]
     steps:
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v1
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v1
       - uses: actions/checkout@v2
       - name: Login to Amazon ECR
         run: aws ecr-public get-login-password | docker login --username AWS --password-stdin public.ecr.aws
