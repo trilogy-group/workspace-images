@@ -72,7 +72,7 @@ ENV TRIGGER_BREW_REBUILD=2
 #    HOMEBREW_NO_AUTO_UPDATE=1
 #RUN sudo apt remove -y cmake \
 #    && brew install cmake
-RUN mkdir -p /home/linuxbrew/.linuxbrew && cd /home/linuxbrew && curl -L https://github.com/Homebrew/brew/tarball/master | tar xz --strip 1 -C .linuxbrew
+RUN sudo mkdir -p /home/linuxbrew/.linuxbrew && cd /home/linuxbrew && curl -L https://github.com/Homebrew/brew/tarball/master | tar xz --strip 1 -C .linuxbrew
 
 ### Go ###
 LABEL dazzle/layer=lang-go
