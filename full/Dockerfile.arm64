@@ -209,6 +209,10 @@ ENV PATH=$PATH:$HOME/.cargo/bin
 
 RUN bash -lc "cargo install cargo-watch cargo-edit cargo-tree"
 
+### AWS CLI
+USER gitpod
+RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-aarch64.zip" -o "awscliv2.zip" && unzip awscliv2.zip && sudo ./aws/install
+
 ### Docker ###
 LABEL dazzle/layer=tool-docker
 LABEL dazzle/test=tests/tool-docker.yaml
