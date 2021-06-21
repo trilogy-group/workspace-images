@@ -59,6 +59,21 @@ COPY --chown=gitpod:gitpod nginx /etc/nginx/
 ENV APACHE_DOCROOT_IN_REPO="public"
 ENV NGINX_DOCROOT_IN_REPO="public"
 
+### Homebrew ###
+LABEL dazzle/layer=tool-brew
+LABEL dazzle/test=tests/tool-brew.yaml
+USER gitpod
+# Dazzle does not rebuild a layer until one of its lines are changed. Increase this counter to rebuild this layer.
+ENV TRIGGER_BREW_REBUILD=2
+#RUN mkdir ~/.cache && /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+RUN sudo mkdir -p /home/linuxbrew/.linuxbrew && cd /home/linuxbrew && sudo curl -L https://github.com/Homebrew/brew/tarball/master | sudo tar xz --strip 1 -C .linuxbrew && sudo chown -R gitpod:gitpod /home/linuxbrew/.linuxbrew
+ENV PATH="$PATH:/home/linuxbrew/.linuxbrew/bin:/home/linuxbrew/.linuxbrew/sbin/" \
+    MANPATH="$MANPATH:/home/linuxbrew/.linuxbrew/share/man" \
+    INFOPATH="$INFOPATH:/home/linuxbrew/.linuxbrew/share/info" \
+    HOMEBREW_NO_AUTO_UPDATE=1
+#RUN sudo apt remove -y cmake \
+#    && brew install cmake
+
 ### Go ###
 LABEL dazzle/layer=lang-go
 LABEL dazzle/test=tests/lang-go.yaml
@@ -174,21 +189,6 @@ RUN curl -fsSL https://rvm.io/mpapis.asc | gpg --import - \
         && gem install solargraph --no-document" \
     && echo '[[ -s "$HOME/.rvm/scripts/rvm" ]] && source "$HOME/.rvm/scripts/rvm" # Load RVM into a shell session *as a function*' >> /home/gitpod/.bashrc.d/70-ruby
 RUN echo "rvm_gems_path=/workspace/.rvm" > ~/.rvmrc
-
-### Homebrew ###
-LABEL dazzle/layer=tool-brew
-LABEL dazzle/test=tests/tool-brew.yaml
-USER gitpod
-# Dazzle does not rebuild a layer until one of its lines are changed. Increase this counter to rebuild this layer.
-ENV TRIGGER_BREW_REBUILD=2
-#RUN mkdir ~/.cache && /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-RUN sudo mkdir -p /home/linuxbrew/.linuxbrew && cd /home/linuxbrew && sudo curl -L https://github.com/Homebrew/brew/tarball/master | sudo tar xz --strip 1 -C .linuxbrew && sudo chown -R gitpod:gitpod /home/linuxbrew/.linuxbrew
-ENV PATH="$PATH:/home/linuxbrew/.linuxbrew/bin:/home/linuxbrew/.linuxbrew/sbin/" \
-    MANPATH="$MANPATH:/home/linuxbrew/.linuxbrew/share/man" \
-    INFOPATH="$INFOPATH:/home/linuxbrew/.linuxbrew/share/info" \
-    HOMEBREW_NO_AUTO_UPDATE=1
-#RUN sudo apt remove -y cmake \
-#    && brew install cmake
 
 ### Rust ###
 LABEL dazzle/layer=lang-rust
