@@ -208,9 +208,10 @@ ENV PATH=$PATH:$HOME/.cargo/bin
 
 RUN bash -lc "cargo install cargo-watch cargo-edit cargo-tree"
 
-### AWS CLI
+### Install additional components ###
 USER gitpod
 RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" && unzip awscliv2.zip && sudo ./aws/install
+RUN curl --silent --location "https://github.com/weaveworks/eksctl/releases/latest/download/eksctl_Linux_amd64.tar.gz" | tar xz -C /tmp && sudo mv /tmp/eksctl /usr/local/bin
 
 ### Docker ###
 LABEL dazzle/layer=tool-docker
