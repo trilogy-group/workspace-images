@@ -182,7 +182,7 @@ USER gitpod
 # Dazzle does not rebuild a layer until one of its lines are changed. Increase this counter to rebuild this layer.
 ENV TRIGGER_BREW_REBUILD=2
 #RUN mkdir ~/.cache && /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-RUN sudo mkdir -p /home/linuxbrew/.linuxbrew && cd /home/linuxbrew && sudo curl -L https://github.com/Homebrew/brew/tarball/master | sudo tar xz --strip 1 -C .linuxbrew &&  && sudo chown -R gitpod:gitpod /home/linuxbrew/.linuxbrew
+RUN sudo mkdir -p /home/linuxbrew/.linuxbrew && cd /home/linuxbrew && sudo curl -L https://github.com/Homebrew/brew/tarball/master | sudo tar xz --strip 1 -C .linuxbrew && sudo chown -R gitpod:gitpod /home/linuxbrew/.linuxbrew
 ENV PATH="$PATH:/home/linuxbrew/.linuxbrew/bin:/home/linuxbrew/.linuxbrew/sbin/" \
     MANPATH="$MANPATH:/home/linuxbrew/.linuxbrew/share/man" \
     INFOPATH="$INFOPATH:/home/linuxbrew/.linuxbrew/share/info" \
