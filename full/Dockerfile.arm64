@@ -223,6 +223,9 @@ RUN sudo apt-get update && \
     sudo apt-get update && \
     sudo apt-get install -y kubectl
 RUN npm install -g aws-cdk
+RUN export VERSION="v1.20.0" && \
+    wget https://github.com/kubernetes-sigs/cri-tools/releases/download/$VERSION/crictl-$VERSION-linux-arm64.tar.gz -O /tmp/crictl-linux-arm64.tar.gz && \
+    sudo tar zxvf /tmp/crictl-linux-arm64.tar.gz -C /usr/local/bin
 
 ### Docker ###
 LABEL dazzle/layer=tool-docker
