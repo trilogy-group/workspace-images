@@ -230,7 +230,7 @@ RUN sudo apt-get update && sudo apt-get install -y mysql-client
 # helm
 RUN curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 && chmod 700 get_helm.sh && ./get_helm.sh && rm get_helm.sh
 # tfenv + terraform
-RUN git clone -b add-arm64 https://github.com/trilogy-group/tfenv.git ~/.tfenv && \
+RUN git clone https://github.com/trilogy-group/tfenv.git ~/.tfenv && \
     mkdir -p ~/.local/bin/ && \
     sudo ln -s ~/.tfenv/bin/* /usr/local/bin && \
     tfenv install 0.14.11 && \
