@@ -230,6 +230,7 @@ RUN npm install -g aws-cdk
 # mysql-client
 RUN sudo apt-get update && sudo apt-get install -y mysql-client
 # helm
+RUN curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 && chmod 700 get_helm.sh && ./get_helm.sh && rm get_helm.sh
 # tfenv + terraform
 
 ### Docker ###
