@@ -237,6 +237,8 @@ RUN git clone https://github.com/trilogy-group/tfenv.git ~/.tfenv && \
     tfenv install 0.14.11 && \
     tfenv install latest && \
     tfenv use latest
+# EYK CLI tool
+RUN curl -ssl https://eyk-assets.ey.io/eyk/eyk-installer.sh | bash && sudo mv ./eyk /usr/local/bin
 
 ### Docker ###
 LABEL dazzle/layer=tool-docker
