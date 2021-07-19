@@ -122,7 +122,7 @@ USER gitpod
 RUN curl -fsSL "https://get.sdkman.io" | bash \
  && bash -c ". /home/gitpod/.sdkman/bin/sdkman-init.sh \
              && sdk install java 11.0.11.fx-zulu \
-             && sdk install java 8.0.292.hs-adpt \
+             && sdk install java 8.0.292.j9-adpt \
              && sdk install gradle \
              && sdk install maven \
              && sdk flush archives \
