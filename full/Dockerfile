@@ -190,6 +190,15 @@ RUN curl -fsSL https://rvm.io/mpapis.asc | gpg --import - \
     && echo '[[ -s "$HOME/.rvm/scripts/rvm" ]] && source "$HOME/.rvm/scripts/rvm" # Load RVM into a shell session *as a function*' >> /home/gitpod/.bashrc.d/70-ruby
 RUN echo "rvm_gems_path=/workspace/.rvm" > ~/.rvmrc
 
+### .Net ###
+RUN mkdir /home/gitpod/dotnet-64 && \
+    cd /home/gitpod/dotnet-64 && \
+    wget https://download.visualstudio.microsoft.com/download/pr/820db713-c9a5-466e-b72a-16f2f5ed00e2/628aa2a75f6aa270e77f4a83b3742fb8/dotnet-sdk-5.0.100-linux-x64.tar.gz && \
+    tar zxf dotnet-sdk-5.0.100-linux-x64.tar.gz -C ./ && \
+    rm dotnet-sdk-5.0.100-linux-x64.tar.gz 
+ENV PATH=$PATH:/home/gitpod/dotnet-64
+ENV DOTNET_ROOT=/home/gitpod/dotnet-64
+
 ### Rust ###
 LABEL dazzle/layer=lang-rust
 LABEL dazzle/test=tests/lang-rust.yaml
