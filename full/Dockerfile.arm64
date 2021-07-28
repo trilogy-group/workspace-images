@@ -120,6 +120,11 @@ RUN curl -fsSL https://storage.googleapis.com/golang/go$GO_VERSION.linux-arm64.t
     GO111MODULE=on go get -v \
         golang.org/x/tools/gopls@v0.7.0 && \
     sudo rm -rf $GOPATH/src $GOPATH/pkg /home/gitpod/.cache/go /home/gitpod/.cache/go-build
+
+# https://github.com/wagoodman/dive
+USER gitpod
+RUN cd && git clone https://github.com/wagoodman/dive.git -b v0.10.0 && cd dive && go build -o bin/dive && sudo mv bin/dive /usr/bin && cd .. && rm -rf dive && sudo chmod +x /usr/bin/dive
+
 # user Go packages
 ENV GOPATH=/workspace/go \
     PATH=/workspace/go/bin:$PATH
@@ -268,10 +273,6 @@ RUN curl -o /usr/bin/slirp4netns -fsSL https://github.com/rootless-containers/sl
     && chmod +x /usr/bin/slirp4netns
 
 RUN pip install docker-compose
-
-# https://github.com/wagoodman/dive
-USER gitpod
-RUN cd && git clone https://github.com/wagoodman/dive.git -b v0.10.0 && cd dive && go build -o bin/dive && sudo mv bin/dive /usr/bin && cd .. && rm -rf dive && sudo chmod +x /usr/bin/dive
 
 ### Prologue (built across all layers) ###
 LABEL dazzle/layer=dazzle-prologue
