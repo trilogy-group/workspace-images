@@ -277,8 +277,7 @@ RUN cd && git clone https://github.com/wagoodman/dive.git -b v0.10.0 && cd dive 
 LABEL dazzle/layer=dazzle-prologue
 LABEL dazzle/test=tests/prologue.yaml
 USER root
-#RUN curl -o /usr/bin/dazzle-util -fsSL https://github.com/csweichel/dazzle/releases/download/v0.1.0/dazzle-util_0.1.0_Linux_arm64 \
-RUN curl -fsSL https://arm-devspaces.s3.amazonaws.com/dazzle-util -o /usr/bin/dazzle-util \
+RUN curl -o /usr/bin/dazzle-util -fsSL https://github.com/csweichel/dazzle/releases/download/v0.1.2/dazzle-util_0.1.2_Linux_arm64 \
     && chmod +x /usr/bin/dazzle-util
 # merge dpkg status files
 RUN cp /var/lib/dpkg/status /tmp/dpkg-status \
