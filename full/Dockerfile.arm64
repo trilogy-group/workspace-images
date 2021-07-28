@@ -270,11 +270,8 @@ RUN curl -o /usr/bin/slirp4netns -fsSL https://github.com/rootless-containers/sl
 RUN pip install docker-compose
 
 # https://github.com/wagoodman/dive
-#RUN curl -o /tmp/dive.deb -fsSL https://github.com/wagoodman/dive/releases/download/v0.9.2/dive_0.9.2_linux_arm64.deb \
-#    && apt install /tmp/dive.deb \
-#    && rm /tmp/dive.deb
-COPY dive-arm64.zip .
-RUN unzip dive-arm64.zip -d /usr/bin && chmod +x /usr/bin/dive
+USER gitpod
+RUN cd && git clone https://github.com/wagoodman/dive.git -b v0.10.0 && cd dive && go build -o bin/dive && sudo mv bin/dive /usr/bin && cd .. && rm -rf dive && sudo chmod +x /usr/bin/dive
 
 ### Prologue (built across all layers) ###
 LABEL dazzle/layer=dazzle-prologue
