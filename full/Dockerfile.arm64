@@ -271,7 +271,7 @@ RUN pip install docker-compose
 
 # https://github.com/wagoodman/dive
 USER gitpod
-RUN cd && git clone https://github.com/wagoodman/dive.git -b v0.10.0 && cd dive && go build -o bin/dive && sudo mv bin/dive /usr/bin && cd .. && rm -rf dive && sudo chmod +x /usr/bin/dive
+RUN cd && git clone https://github.com/wagoodman/dive.git -b v0.10.0 && cd dive && sudo go build -o bin/dive && sudo mv bin/dive /usr/bin && cd .. && rm -rf dive && sudo chmod +x /usr/bin/dive
 
 ### Prologue (built across all layers) ###
 LABEL dazzle/layer=dazzle-prologue
