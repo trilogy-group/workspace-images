@@ -1,4 +1,5 @@
-FROM gitpod/workspace-full:latest
+ARG BASE_IMAGE=devfactory/workspace-full
+FROM $BASE_IMAGE
 
 # Install Xvfb, JavaFX-helpers and Openbox window manager
 RUN sudo install-packages xvfb x11vnc xterm openjfx libopenjfx-java openbox
@@ -28,6 +29,7 @@ RUN echo "[ ! -e /tmp/.X0-lock ] && (/usr/bin/start-vnc-session.sh &> /tmp/displ
 
 ### checks ###
 # no root-owned files in the home directory
+RUN chown -R gitpod:gitpod /home/gitpod
 RUN notOwnedFile=$(find . -not "(" -user gitpod -and -group gitpod ")" -print -quit) \
     && { [ -z "$notOwnedFile" ] \
         || { echo "Error: not all files/dirs in $HOME are owned by 'gitpod' user & group"; exit 1; } }
