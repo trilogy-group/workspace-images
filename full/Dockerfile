@@ -110,6 +110,8 @@ RUN curl -fsSL https://storage.googleapis.com/golang/go$GO_VERSION.linux-amd64.t
     GO111MODULE=on go get -v \
         golang.org/x/tools/gopls@v0.7.0 && \
     sudo rm -rf $GOPATH/src $GOPATH/pkg /home/gitpod/.cache/go /home/gitpod/.cache/go-build
+# golangci-lint
+RUN curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOROOT)/bin v1.41.1
 # user Go packages
 ENV GOPATH=/workspace/go \
     PATH=/workspace/go/bin:$PATH
@@ -242,6 +244,8 @@ RUN curl -ssl https://eyk-assets.ey.io/eyk/eyk-installer.sh | bash && sudo mv ./
 # Mainfest tool
 RUN sudo curl -o /usr/local/bin/manifest-tool -fsSL https://github.com/estesp/manifest-tool/releases/download/v1.0.3/manifest-tool-linux-amd64 \
     && sudo chmod +x /usr/local/bin/manifest-tool
+# Leeway
+RUN wget https://github.com/gitpod-io/leeway/releases/download/v0.2.2/leeway_0.2.2_Linux_x86_64.tar.gz && tar -zxvf leeway_0.2.2_Linux_x86_64.tar.gz leeway && rm leeway_0.2.2_Linux_x86_64.tar.gz && sudo mv leeway /usr/local/bin && sudo chmod +x /usr/local/bin/leeway
 
 ### Docker ###
 LABEL dazzle/layer=tool-docker
