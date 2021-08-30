@@ -24,3 +24,4 @@ myisam-recover-options  = BACKUP
 general_log_file        = /var/log/mysql/mysql.log
 general_log             = 1
 log_error               = /var/log/mysql/error.log
+innodb_use_native_aio = 0
