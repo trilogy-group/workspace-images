@@ -1,4 +1,5 @@
-FROM gitpod/workspace-full:latest
+ARG BASE_IMAGE=devfactory/workspace-full
+FROM $BASE_IMAGE
 
 USER root
 
