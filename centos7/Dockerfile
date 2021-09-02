@@ -49,5 +49,6 @@ RUN /bin/bash -c 'ARCH=`uname -m` && \
     TEMP_DIR=/tmp/git-lfs && \
     mkdir -p ${TEMP_DIR} && \
     tar -zxf ${GITLFS_FILENAME} -C ${TEMP_DIR} && \
+    rm ${GITLFS_FILENAME} && \
     ${TEMP_DIR}/install.sh && \
     rm -rf ${TEMP_DIR}'
