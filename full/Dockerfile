@@ -287,4 +287,7 @@ RUN for i in $(ls /var/lib/apt/dazzle-marks/*.gpg); do apt-key add "$i"; done
 # copy tests to enable the self-test of this image
 COPY tests /var/lib/dazzle/tests
 
+# Github CLI
+RUN wget https://github.com/cli/cli/releases/download/v2.2.0/gh_2.2.0_linux_amd64.deb -O /tmp/gh.deb && apt install /tmp/gh.deb && rm -f /tmp/gh.deb
+
 USER gitpod
