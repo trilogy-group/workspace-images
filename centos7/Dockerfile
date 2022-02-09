@@ -2,7 +2,7 @@ FROM centos:7
 
 # Update libstdc++.so.6 (required for vscode)
 USER root
-COPY libstdc\+\+.so.6.0.24.* /usr/lib64/
+COPY libstdc\\+\\+.so.6.0.24.* /usr/lib64/
 RUN /bin/bash -c 'ARCH=`uname -m` && \
     if [ "$ARCH" == "x86_64" ]; then \
         mv /usr/lib64/libstdc++.so.6.0.24.amd64 /usr/lib64/libstdc++.so.6.0.24 && \
