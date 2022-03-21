@@ -12,7 +12,7 @@ RUN /bin/bash -c 'ARCH=`uname -m` && \
         rm /usr/lib64/libstdc++.so.6.0.28.amd64; \
     fi && \
     mv /usr/lib64/libstdc++.so.6 /usr/lib64/libstdc++.so.6.bkp && \
-    ln -s /usr/lib64/libstdc++.so.6.0.28 /usr/lib64/libstdc++.so.6'
+    ln -s libstdc++.so.6.0.28 /usr/lib64/libstdc++.so.6'
 
 COPY libutil-2.31.so.* /usr/lib64/
 RUN /bin/bash -c 'ARCH=`uname -m` && \
@@ -24,7 +24,7 @@ RUN /bin/bash -c 'ARCH=`uname -m` && \
         rm /usr/lib64/libutil-2.31.so.amd64; \
     fi && \
     mv /usr/lib64/libutil.so.1 /usr/lib64/libutil.so.1.bkp && \
-    ln -s /usr/lib64/libutil-2.31.so /usr/lib64/libutil.so.1'
+    ln -s libutil-2.31.so /usr/lib64/libutil.so.1'
 
 
 # Install core packages
