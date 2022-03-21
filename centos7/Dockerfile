@@ -34,9 +34,9 @@ RUN yum update -y && yum install -y \
   bash-completion \
   wget \
   curl \
-  sudo \
+  sudo
 
-RUN rm /usr/lib64/libutil.so.1; ln -s libutil-2.27.so /usr/lib64/libutil.so.1
+RUN rm /usr/lib64/libutil.so.1 && ln -s libutil-2.27.so /usr/lib64/libutil.so.1
 
 # Install git
 USER root
@@ -52,7 +52,7 @@ RUN yum update -y && yum groupinstall -y "Development Tools" && \
     make install && \
     cd .. && rm -rf git-${GIT_VERSION}
 
-RUN rm /usr/lib64/libutil.so.1; ln -s libutil-2.27.so /usr/lib64/libutil.so.1
+RUN rm /usr/lib64/libutil.so.1 && ln -s libutil-2.27.so /usr/lib64/libutil.so.1
 
 # git-lfs
 RUN /bin/bash -c 'ARCH=`uname -m` && \
@@ -70,4 +70,4 @@ RUN /bin/bash -c 'ARCH=`uname -m` && \
     ${TEMP_DIR}/install.sh && \
     rm -rf ${TEMP_DIR}'
 
-RUN rm /usr/lib64/libutil.so.1; ln -s libutil-2.27.so /usr/lib64/libutil.so.1
+RUN rm /usr/lib64/libutil.so.1 && ln -s libutil-2.27.so /usr/lib64/libutil.so.1
