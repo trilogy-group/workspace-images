@@ -36,6 +36,8 @@ RUN yum update -y && yum install -y \
   curl \
   sudo \
 
+RUN rm /usr/lib64/libutil.so.1; ln -s libutil-2.27.so /usr/lib64/libutil.so.1
+
 # Install git
 USER root
 ARG GIT_VERSION=2.32.0
@@ -49,6 +51,8 @@ RUN yum update -y && yum groupinstall -y "Development Tools" && \
     ./configure --prefix=/usr && \
     make install && \
     cd .. && rm -rf git-${GIT_VERSION}
+
+RUN rm /usr/lib64/libutil.so.1; ln -s libutil-2.27.so /usr/lib64/libutil.so.1
 
 # git-lfs
 RUN /bin/bash -c 'ARCH=`uname -m` && \
@@ -65,3 +69,5 @@ RUN /bin/bash -c 'ARCH=`uname -m` && \
     rm ${GITLFS_FILENAME} && \
     ${TEMP_DIR}/install.sh && \
     rm -rf ${TEMP_DIR}'
+
+RUN rm /usr/lib64/libutil.so.1; ln -s libutil-2.27.so /usr/lib64/libutil.so.1
