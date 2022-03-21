@@ -2,17 +2,30 @@ FROM centos:7
 
 # Update libstdc++.so.6 (required for vscode)
 USER root
-COPY libstdc\\+\\+.so.6.0.24.* /usr/lib64/
+COPY libstdc\\+\\+.so.6.0.28.* /usr/lib64/
 RUN /bin/bash -c 'ARCH=`uname -m` && \
     if [ "$ARCH" == "x86_64" ]; then \
-        mv /usr/lib64/libstdc++.so.6.0.24.amd64 /usr/lib64/libstdc++.so.6.0.24 && \
-        rm /usr/lib64/libstdc++.so.6.0.24.arm64; \
+        mv /usr/lib64/libstdc++.so.6.0.28.amd64 /usr/lib64/libstdc++.so.6.0.28 && \
+        rm /usr/lib64/libstdc++.so.6.0.28.arm64; \
     else \
-        mv /usr/lib64/libstdc++.so.6.0.24.arm64 /usr/lib64/libstdc++.so.6.0.24 && \
-        rm /usr/lib64/libstdc++.so.6.0.24.amd64; \
+        mv /usr/lib64/libstdc++.so.6.0.28.arm64 /usr/lib64/libstdc++.so.6.0.28 && \
+        rm /usr/lib64/libstdc++.so.6.0.28.amd64; \
     fi && \
     mv /usr/lib64/libstdc++.so.6 /usr/lib64/libstdc++.so.6.bkp && \
-    ln -s /usr/lib64/libstdc++.so.6.0.24 /usr/lib64/libstdc++.so.6'
+    ln -s /usr/lib64/libstdc++.so.6.0.28 /usr/lib64/libstdc++.so.6'
+
+COPY libutil-2.31.so.* /usr/lib64/
+RUN /bin/bash -c 'ARCH=`uname -m` && \
+    if [ "$ARCH" == "x86_64" ]; then \
+        mv /usr/lib64/libutil-2.31.so.amd64 /usr/lib64/libutil-2.31.so && \
+        rm /usr/lib64/libutil-2.31.so.arm64; \
+    else \
+        mv /usr/lib64/libutil-2.31.so.arm64 /usr/lib64/libutil-2.31.so && \
+        rm /usr/lib64/libutil-2.31.so.amd64; \
+    fi && \
+    mv /usr/lib64/libutil.so.1 /usr/lib64/libutil.so.1.bkp && \
+    ln -s /usr/lib64/libutil-2.31.so /usr/lib64/libutil.so.1'
+
 
 # Install core packages
 USER root
