@@ -122,6 +122,11 @@ RUN curl -fsSL https://storage.googleapis.com/golang/go$GO_VERSION.linux-arm64.t
     sudo rm -rf $GOPATH/src $GOPATH/pkg /home/gitpod/.cache/go /home/gitpod/.cache/go-build
 # golangci-lint
 RUN curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOROOT)/bin v1.41.1
+
+# https://github.com/wagoodman/dive
+USER gitpod
+RUN cd && git clone https://github.com/wagoodman/dive.git -b v0.10.0 && cd dive && go build -o bin/dive && sudo mv bin/dive /usr/bin && cd .. && rm -rf dive && sudo chmod +x /usr/bin/dive
+
 # user Go packages
 ENV GOPATH=/workspace/go \
     PATH=/workspace/go/bin:$PATH
@@ -273,19 +278,11 @@ RUN curl -o /usr/bin/slirp4netns -fsSL https://github.com/rootless-containers/sl
 
 RUN pip install docker-compose
 
-# https://github.com/wagoodman/dive
-#RUN curl -o /tmp/dive.deb -fsSL https://github.com/wagoodman/dive/releases/download/v0.9.2/dive_0.9.2_linux_arm64.deb \
-#    && apt install /tmp/dive.deb \
-#    && rm /tmp/dive.deb
-COPY dive-arm64.zip .
-RUN unzip dive-arm64.zip -d /usr/bin && chmod +x /usr/bin/dive
-
 ### Prologue (built across all layers) ###
 LABEL dazzle/layer=dazzle-prologue
 LABEL dazzle/test=tests/prologue.yaml
 USER root
-#RUN curl -o /usr/bin/dazzle-util -fsSL https://github.com/csweichel/dazzle/releases/download/v0.1.0/dazzle-util_0.1.0_Linux_arm64 \
-RUN curl -fsSL https://arm-devspaces.s3.amazonaws.com/dazzle-util -o /usr/bin/dazzle-util \
+RUN curl -o /usr/bin/dazzle-util -fsSL https://github.com/csweichel/dazzle/releases/download/v0.1.2/dazzle-util_0.1.2_Linux_arm64 \
     && chmod +x /usr/bin/dazzle-util
 # merge dpkg status files
 RUN cp /var/lib/dpkg/status /tmp/dpkg-status \
