@@ -10,9 +10,11 @@ LABEL dazzle/test=tests/lang-c.yaml
 USER root
 # Dazzle does not rebuild a layer until one of its lines are changed. Increase this counter to rebuild this layer.
 ENV TRIGGER_REBUILD=3
+
+# llvm-toolchain-focal is currently broken, so we are hardcoding to llvm-toolchain-focal-14. This can be rolled back in future versions
 RUN curl -o /var/lib/apt/dazzle-marks/llvm.gpg -fsSL https://apt.llvm.org/llvm-snapshot.gpg.key \
     && apt-key add /var/lib/apt/dazzle-marks/llvm.gpg \
-    && echo "deb https://apt.llvm.org/focal/ llvm-toolchain-focal main" >> /etc/apt/sources.list.d/llvm.list \
+    && echo "deb https://apt.llvm.org/focal/ llvm-toolchain-focal-14 main" >> /etc/apt/sources.list.d/llvm.list \
     && install-packages \
         clang \
         clangd \
@@ -77,44 +79,27 @@ RUN sudo apt remove -y cmake \
 LABEL dazzle/layer=lang-go
 LABEL dazzle/test=tests/lang-go.yaml
 USER gitpod
-ENV GO_VERSION=1.16.5
+ENV GO_VERSION=1.18.4
 ENV GOPATH=$HOME/go-packages
 ENV GOROOT=$HOME/go
 ENV PATH=$GOROOT/bin:$GOPATH/bin:$PATH
-RUN curl -fsSL https://storage.googleapis.com/golang/go$GO_VERSION.linux-amd64.tar.gz | tar xzs && \
-# install VS Code Go tools from https://github.com/Microsoft/vscode-go/blob/0faec7e5a8a69d71093f08e035d33beb3ded8626/src/goInstallTools.ts#L19-L45
-    go get -v \
-        github.com/mdempsky/gocode \
-        github.com/uudashr/gopkgs/cmd/gopkgs@v2 \
-        github.com/ramya-rao-a/go-outline \
-        github.com/acroca/go-symbols \
-        golang.org/x/tools/cmd/guru \
-        golang.org/x/tools/cmd/gorename \
-        github.com/fatih/gomodifytags \
-        github.com/haya14busa/goplay/cmd/goplay \
-        github.com/josharian/impl \
-        github.com/tylerb/gotype-live \
-        github.com/rogpeppe/godef \
-        github.com/zmb3/gogetdoc \
-        golang.org/x/tools/cmd/goimports \
-        github.com/sqs/goreturns \
-        winterdrache.de/goformat/goformat \
-        golang.org/x/lint/golint \
-        github.com/cweill/gotests/... \
-        honnef.co/go/tools/... \
-        github.com/mgechev/revive \
-        github.com/sourcegraph/go-langserver \
-        github.com/go-delve/delve/cmd/dlv \
-        github.com/davidrjenni/reftools/cmd/fillstruct \
-        github.com/godoctor/godoctor && \
-    GO111MODULE=on go get -v \
-        golang.org/x/tools/gopls@v0.7.0 && \
-    sudo rm -rf $GOPATH/src $GOPATH/pkg /home/gitpod/.cache/go /home/gitpod/.cache/go-build
-# golangci-lint
-RUN curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOROOT)/bin v1.41.1
-# user Go packages
-ENV GOPATH=/workspace/go \
-    PATH=/workspace/go/bin:$PATH
+RUN curl -fsSL https://dl.google.com/go/go$GO_VERSION.linux-amd64.tar.gz | tar xzs && \
+# install VS Code Go tools for use with gopls as per https://github.com/golang/vscode-go/blob/master/docs/tools.md
+# also https://github.com/golang/vscode-go/blob/27bbf42a1523cadb19fad21e0f9d7c316b625684/src/goTools.ts#L139
+    go install -v github.com/uudashr/gopkgs/cmd/gopkgs@v2 && \
+    go install -v github.com/ramya-rao-a/go-outline@latest && \
+    go install -v github.com/cweill/gotests/gotests@latest && \
+    go install -v github.com/fatih/gomodifytags@latest && \
+    go install -v github.com/josharian/impl@latest && \
+    go install -v github.com/haya14busa/goplay/cmd/goplay@latest && \
+    go install -v github.com/go-delve/delve/cmd/dlv@latest && \
+    go install -v github.com/golangci/golangci-lint/cmd/golangci-lint@latest && \
+    go install -v golang.org/x/tools/gopls@latest && \
+    sudo rm -rf $GOPATH/src $GOPATH/pkg $HOME/.cache/go $HOME/.cache/go-build && \
+    printf '%s\n' 'export GOPATH=/workspace/go' \
+                  'export PATH=$GOPATH/bin:$PATH' > $HOME/.bashrc.d/300-go
+## golangci-lint
+#RUN curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOROOT)/bin v1.41.1
 
 ### Java ###
 ## Place '.gradle' and 'm2-repository' in /workspace because (1) that's a fast volume, (2) it survives workspace-restarts and (3) it can be warmed-up by pre-builds.
@@ -196,19 +181,17 @@ RUN echo "rvm_gems_path=/workspace/.rvm" > ~/.rvmrc
 LABEL dazzle/layer=lang-rust
 LABEL dazzle/test=tests/lang-rust.yaml
 USER gitpod
-RUN cp /home/gitpod/.profile /home/gitpod/.profile_orig && \
-    curl -fsSL https://sh.rustup.rs | sh -s -- -y --profile minimal --default-toolchain 1.58.1 \
-    && .cargo/bin/rustup component add \
-        rls \
-        rust-analysis \
-        rust-src \
-        rustfmt \
-    && .cargo/bin/rustup completions bash | sudo tee /etc/bash_completion.d/rustup.bash-completion > /dev/null \
-    && .cargo/bin/rustup completions bash cargo | sudo tee /etc/bash_completion.d/rustup.cargo-bash-completion > /dev/null \
-    && grep -v -F -x -f /home/gitpod/.profile_orig /home/gitpod/.profile > /home/gitpod/.bashrc.d/80-rust
-ENV PATH=$PATH:$HOME/.cargo/bin
+ENV PATH=$HOME/.cargo/bin:$PATH
 
-RUN bash -lc "cargo install cargo-watch cargo-edit cargo-tree"
+RUN curl -fsSL https://sh.rustup.rs | sh -s -- -y --profile minimal --no-modify-path --default-toolchain stable \
+        -c rls rust-analysis rust-src rustfmt clippy \
+    && for cmp in rustup cargo; do rustup completions bash "$cmp" > "$HOME/.local/share/bash-completion/completions/$cmp"; done \
+    && printf '%s\n'    'export CARGO_HOME=/workspace/.cargo' \
+                        'mkdir -m 0755 -p "$CARGO_HOME/bin" 2>/dev/null' \
+                        'export PATH=$CARGO_HOME/bin:$PATH' \
+                        'test ! -e "$CARGO_HOME/bin/rustup" && mv "$(command -v rustup)" "$CARGO_HOME/bin"' > $HOME/.bashrc.d/80-rust \
+    && cargo install cargo-watch cargo-edit cargo-workspaces \
+    && rm -rf "$HOME/.cargo/registry" # This registry cache is now useless as we change the CARGO_HOME path to `/workspace`
 
 ### Install additional components ###
 USER gitpod
