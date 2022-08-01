@@ -1,6 +1,6 @@
 FROM buildpack-deps:focal
 
-COPY install-packages /usr/bin
+COPY install-packages upgrade-packages /usr/bin
 
 ### base ###
 ARG DEBIAN_FRONTEND=noninteractive
