@@ -12,14 +12,14 @@ USER root
 ENV TRIGGER_REBUILD=3
 RUN curl -o /var/lib/apt/dazzle-marks/llvm.gpg -fsSL https://apt.llvm.org/llvm-snapshot.gpg.key \
     && apt-key add /var/lib/apt/dazzle-marks/llvm.gpg \
-    && echo "deb https://apt.llvm.org/focal/ llvm-toolchain-focal main" >> /etc/apt/sources.list.d/llvm.list \
+    && echo "deb https://apt.llvm.org/focal/ llvm-toolchain-focal-14 main" >> /etc/apt/sources.list.d/llvm.list \
     && install-packages \
-        clang \
-        clangd \
-        clang-format \
-        clang-tidy \
+        clang-16 \
+        clangd-16 \
+        clang-format-16 \
+        clang-tidy-16 \
         gdb \
-        lld
+        lld-16
 
 ### Apache, PHP and Nginx ###
 LABEL dazzle/layer=tool-nginx
