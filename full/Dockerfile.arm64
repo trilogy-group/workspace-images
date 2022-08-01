@@ -191,19 +191,17 @@ RUN echo "rvm_gems_path=/workspace/.rvm" > ~/.rvmrc
 LABEL dazzle/layer=lang-rust
 LABEL dazzle/test=tests/lang-rust.yaml
 USER gitpod
-RUN cp /home/gitpod/.profile /home/gitpod/.profile_orig && \
-    curl -fsSL https://sh.rustup.rs | sh -s -- -y --profile minimal --default-toolchain 1.58.1 \
-    && .cargo/bin/rustup component add \
-        rls \
-        rust-analysis \
-        rust-src \
-        rustfmt \
-    && .cargo/bin/rustup completions bash | sudo tee /etc/bash_completion.d/rustup.bash-completion > /dev/null \
-    && .cargo/bin/rustup completions bash cargo | sudo tee /etc/bash_completion.d/rustup.cargo-bash-completion > /dev/null \
-    && grep -v -F -x -f /home/gitpod/.profile_orig /home/gitpod/.profile > /home/gitpod/.bashrc.d/80-rust
-ENV PATH=$PATH:$HOME/.cargo/bin
+ENV PATH=$HOME/.cargo/bin:$PATH
 
-RUN bash -lc "cargo install cargo-watch cargo-edit cargo-tree"
+RUN curl -fsSL https://sh.rustup.rs | sh -s -- -y --profile minimal --no-modify-path --default-toolchain stable \
+        -c rls rust-analysis rust-src rustfmt clippy \
+    && for cmp in rustup cargo; do rustup completions bash "$cmp" > "$HOME/.local/share/bash-completion/completions/$cmp"; done \
+    && printf '%s\n'    'export CARGO_HOME=/workspace/.cargo' \
+                        'mkdir -m 0755 -p "$CARGO_HOME/bin" 2>/dev/null' \
+                        'export PATH=$CARGO_HOME/bin:$PATH' \
+                        'test ! -e "$CARGO_HOME/bin/rustup" && mv "$(command -v rustup)" "$CARGO_HOME/bin"' > $HOME/.bashrc.d/80-rust \
+    && cargo install cargo-watch cargo-edit cargo-workspaces \
+    && rm -rf "$HOME/.cargo/registry" # This registry cache is now useless as we change the CARGO_HOME path to `/workspace`
 
 ### Install additional components ###
 USER gitpod
