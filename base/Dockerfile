@@ -35,7 +35,7 @@ ENV LANG=en_US.UTF-8
 RUN upgrade-packages
 
 ### Git ###
-RUN add-apt-repository -y ppa:git-core/ppa \
+RUN add-apt-repository -y ppa:git-core/ppa
 RUN install-packages git git-lfs
 
 ### Gitpod user ###
