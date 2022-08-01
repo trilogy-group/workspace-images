@@ -10,6 +10,8 @@ LABEL dazzle/test=tests/lang-c.yaml
 USER root
 # Dazzle does not rebuild a layer until one of its lines are changed. Increase this counter to rebuild this layer.
 ENV TRIGGER_REBUILD=3
+
+# llvm-toolchain-focal is currently broken, so we are hardcoding to llvm-toolchain-focal-14. This can be rolled back in future versions
 RUN curl -o /var/lib/apt/dazzle-marks/llvm.gpg -fsSL https://apt.llvm.org/llvm-snapshot.gpg.key \
     && apt-key add /var/lib/apt/dazzle-marks/llvm.gpg \
     && echo "deb https://apt.llvm.org/focal/ llvm-toolchain-focal-14 main" >> /etc/apt/sources.list.d/llvm.list \
