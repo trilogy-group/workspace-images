@@ -79,7 +79,7 @@ RUN sudo apt remove -y cmake \
 LABEL dazzle/layer=lang-go
 LABEL dazzle/test=tests/lang-go.yaml
 USER gitpod
-ENV GO_VERSION=1.18.4
+ENV GO_VERSION=1.18.10
 ENV GOPATH=$HOME/go-packages
 ENV GOROOT=$HOME/go
 ENV PATH=$GOROOT/bin:$GOPATH/bin:$PATH
@@ -93,7 +93,7 @@ RUN curl -fsSL https://dl.google.com/go/go$GO_VERSION.linux-amd64.tar.gz | tar x
     go install -v github.com/josharian/impl@latest && \
     go install -v github.com/haya14busa/goplay/cmd/goplay@latest && \
     go install -v github.com/go-delve/delve/cmd/dlv@latest && \
-    go install -v github.com/golangci/golangci-lint/cmd/golangci-lint@latest && \
+    go install -v github.com/golangci/golangci-lint/cmd/golangci-lint@v1.50 && \
     go install -v golang.org/x/tools/gopls@latest && \
     sudo rm -rf $GOPATH/src $GOPATH/pkg $HOME/.cache/go $HOME/.cache/go-build && \
     printf '%s\n' 'export GOPATH=/workspace/go' \
